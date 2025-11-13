@@ -411,6 +411,9 @@
                 theme = "night";       
             }
 
+            const root = document.documentElement;
+            root.setAttribute("data-theme", 
+                theme);
             document.body.setAttribute("data-theme", theme);
         })();
 

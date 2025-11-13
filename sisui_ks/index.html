@@ -20,8 +20,11 @@
         rel="stylesheet">
 
     <style>
-        html{
-        background: #000;
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
         :root {
             --text-main: rgba(255, 255, 255, 0.9);
@@ -46,6 +49,7 @@
         }
 
         /* ☀ 朝 */
+        html[data-theme="morning"],
         body[data-theme="morning"] {
             background: radial-gradient(circle at top left,
                     #ffe9c7 0%,
@@ -55,6 +59,7 @@
         }
 
         /* 🌤 昼 */
+        html[data-theme="day"],
         body[data-theme="day"] {
             background: radial-gradient(circle at top left,
                     #e4f1ff 0%,
@@ -64,6 +69,7 @@
         }
 
         /* 🌇 夕方〜マジックアワー */
+        html[data-theme="evening"],
         body[data-theme="evening"] {
             background: radial-gradient(circle at top left,
                     #f7b07c 0%,

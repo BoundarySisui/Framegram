@@ -19,6 +19,23 @@
         href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Kaisei+Decol&family=Kaisei+Opti&family=Kosugi&family=Kosugi+Maru&family=Momo+Signature&family=Noto+Sans+JP:wght@100..900&family=Sawarabi+Gothic&family=Yomogi&family=Zen+Maru+Gothic&display=swap"
         rel="stylesheet">
     <style>
+    /* ← ここを必ず追加して！ */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+        "Segoe UI", sans-serif;
+    color: var(--text-main);
+    min-height: 100vh;
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
         :root {
             --text-main: rgba(255, 255, 255, 0.9);
             --text-sub: rgba(255, 255, 255, 0.6);

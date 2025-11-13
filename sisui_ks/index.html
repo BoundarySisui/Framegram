@@ -1,328 +1,561 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LAZY FRAME</title>
+    <meta charset="UTF-8" />
+    <title>Lazygram</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 検索エンジンには載せない -->
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- Googleフォント -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Kaisei+Decol&family=Kaisei+Opti&family=Kosugi&family=Kosugi+Maru&family=Noto+Sans+JP:wght@100.900&family=Sawarabi+Gothic&family=Yomogi&family=Zen+Maru+Gothic&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic&family=Kaisei+Decol&family=Kaisei+Opti&family=Kosugi&family=Kosugi+Maru&family=Momo+Signature&family=Noto+Sans+JP:wght@100.900&family=Sawarabi+Gothic&family=Yomogi&family=Zen+Maru+Gothic&display=swap"
+        rel="stylesheet">
 
-<style>
+    <style>
+        :root {
+            --text-main: rgba(255, 255, 255, 0.9);
+            --text-sub: rgba(255, 255, 255, 0.6);
+            --accent-secret: #ffb347;
+        }
 
-/* -------------------------------
-   ★ 背景白抜け対策（重要）
--------------------------------- */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: none; /* ←ブラウザ初期の白背景を完全に消す */
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
-  color: #fff;
-  min-height: 100vh;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+                "Segoe UI", sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
 
-  /* スクロール時の白抜け防止 */
-  background-attachment: fixed;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
+        /* ☀ 朝 */
+        body[data-theme="morning"] {
+            background: radial-gradient(circle at top left,
+                    #ffe9c7 0%,
+                    #ffd1a1 25%,
+                    #f2a97c 55%,
+                    #7b5b4a 100%);
+        }
 
-/* -------------------------------
-   時間帯ごとのマジックアワー背景
--------------------------------- */
+        /* 🌤 昼 */
+        body[data-theme="day"] {
+            background: radial-gradient(circle at top left,
+                    #e4f1ff 0%,
+                    #b7ceef 30%,
+                    #6b88c4 60%,
+                    #283654 100%);
+        }
 
-/* ☀ 朝 */
-body[data-theme="morning"] {
-  background: radial-gradient(circle at top left,
-    #ffe9c7 0%,
-    #ffd1a1 25%,
-    #f2a97c 55%,
-    #7b5b4a 100%
-  );
-}
+        /* 🌇 夕方〜マジックアワー */
+        body[data-theme="evening"] {
+            background: radial-gradient(circle at top left,
+                    #f7b07c 0%,
+                    #c1848a 18%,
+                    #5d4b85 45%,
+                    #1f2a47 75%,
+                    #0c1220 100%);
+        }
 
-/* 🌤 昼 */
-body[data-theme="day"] {
-  background: radial-gradient(circle at top left,
-    #e4f1ff 0%,
-    #b7ceef 30%,
-    #6b88c4 60%,
-    #283654 100%
-  );
-}
+        /* 🌌 夜 */
+        body[data-theme="night"] {
+            background: radial-gradient(circle at top left,
+                    #c6d8ff 0%,
+                    #8ba0d4 20%,
+                    #4a5883 45%,
+                    #1d2640 75%,
+                    #070a13 100%);
+        }
 
-/* 🌇 夕方（マジックアワー） */
-body[data-theme="evening"] {
-  background: radial-gradient(circle at top left,
-    #f7b07c 0%,
-    #c1848a 18%,
-    #5d4b85 45%,
-    #1f2a47 75%,
-    #0c1220 100%
-  );
-}
+        .app {
+            max-width: 640px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding: 24px 12px 40px;
+            position: relative;
+        }
 
-/* 🌌 夜 */
-body[data-theme="night"] {
-  background: radial-gradient(circle at top left,
-    #c6d8ff 0%,
-    #8ba0d4 20%,
-    #4a5883 45%,
-    #1d2640 75%,
-    #070a13 100%
-  );
-}
+        /* =============== ヘッダー（ガラス） =============== */
+        .topbar {
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
 
+            background: linear-gradient(145deg,
+                    rgba(255, 255, 255, 0.18),
+                    rgba(255, 255, 255, 0.04));
+            backdrop-filter: blur(24px) saturate(140%);
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow:
+                0 6px 16px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
 
-/* -------------------------------
-  アプリコンテナ
--------------------------------- */
-.app {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 24px 12px;
-  position: relative;
-  color: #fff;
-}
+        .topbar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom right,
+                    rgba(255, 255, 255, 0.55) 0%,
+                    rgba(255, 255, 255, 0.10) 35%,
+                    rgba(255, 255, 255, 0) 70%);
+            mix-blend-mode: screen;
+            opacity: 0.45;
+        }
 
+        .topbar-title {
+            position: relative;
+            font-weight: 600;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: "Momo Signature", cursive;
+        }
 
-/* -------------------------------
-  トップバー / タイトル
--------------------------------- */
-.topbar {
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
+        .topbar-badge {
+            font-size: 10px;
+            color: var(--accent-secret);
+            border: 1px solid var(--accent-secret);
+            border-radius: 999px;
+            padding: 1px 6px;
+            display: none;
+        }
 
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.2);
-}
+        .hamburger {
+            position: relative;
+            width: 28px;
+            height: 22px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
 
-.topbar-title {
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: 1px;
-}
+        .hamburger span {
+            display: block;
+            height: 2px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+        }
 
-/* -------------------------------
-  ハンバーガーメニュー
--------------------------------- */
-.hamburger {
-  background: none;
-  border: none;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  cursor: pointer;
-}
+        /* ===== メニューパネル ===== */
+        .menu-panel {
+            position: fixed;
+            top: 64px;
+            right: max(12px, calc((100vw - 640px) / 2 + 12px));
 
-.hamburger span {
-  display: block;
-  height: 3px;
-  margin: 5px 0;
-  background: rgba(255,255,255,0.85);
-  border-radius: 3px;
-  box-shadow: 0 0 6px rgba(255,255,255,0.35);
-}
+            width: 230px;
+            background: linear-gradient(145deg,
+                    rgba(255, 255, 255, 0.2),
+                    rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(24px) saturate(140%);
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
 
-/* -------------------------------
-  ★ メニューパネル（fixed）
--------------------------------- */
-.menu-panel {
-  position: fixed;
-  top: 64px;
-  right: max(12px, calc((100vw - 640px) / 2 + 12px));
-  width: 230px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow:
+                0 18px 28px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.06);
 
-  background: linear-gradient(145deg,
-    rgba(255,255,255,0.2),
-    rgba(255,255,255,0.05)
-  );
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+            display: none;
+            overflow: hidden;
+            z-index: 999;
+        }
 
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.35);
-  box-shadow:
-    0 18px 28px rgba(0,0,0,0.6),
-    0 0 0 1px rgba(255,255,255,0.06);
+        .menu-panel.open {
+            display: block;
+        }
 
-  display: none;
-  overflow: hidden;
-  z-index: 999;
-}
+        .menu-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(2px);
+        }
 
-.menu-panel.open {
-  display: block;
-}
+        .menu-item:last-child {
+            border-bottom: none;
+        }
 
-.menu-item {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.9);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  cursor: pointer;
-}
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
 
-.admin-only { display: none; }
+        .menu-item-label-sub {
+            display: block;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+        }
 
-/* -------------------------------
-  プロフィール
--------------------------------- */
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-}
+        .admin-only {
+            display: none;
+        }
 
-.avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 999px;
+        /* ================== プロフィール ================== */
+        .profile {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  backdrop-filter: blur(10px);
-}
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 999px;
 
-.profile-name {
-  font-size: 18px;
-  font-weight: bold;
-}
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.40);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
 
+            overflow: hidden;
+            flex-shrink: 0;
 
-/* -------------------------------
-  投稿カード（ガラス）
--------------------------------- */
-.posts { margin-top: 30px; }
+            box-shadow:
+                0 10px 18px rgba(0, 0, 0, 0.55),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
 
-.post-card {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-  border-radius: 24px;
-  border: 1px solid rgba(255,255,255,0.25);
+        .profile-name {
+            font-size: 17px;
+            font-weight: 600;
+        }
 
-  padding: 18px 18px;
-  margin-bottom: 26px;
-  color: rgba(255,255,255,0.88);
-}
+        .profile-sub {
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-sub);
+            margin-top: 3px;
+        }
 
-.post-image {
-  width: 100%;
-  border-radius: 20px;
-  margin-top: 10px;
-}
+        /* ================== 投稿 ================== */
 
-</style>
+        .posts {
+            margin-top: 28px;
+        }
 
+        .post-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(22px) saturate(150%);
+            -webkit-backdrop-filter: blur(22px) saturate(150%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 18px 18px;
+            margin-bottom: 26px;
+            color: rgba(255, 255, 255, 0.88);
+            box-shadow:
+                0 12px 24px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-header .avatar {
+            width: 36px;
+            height: 36px;
+            box-shadow:
+                0 8px 14px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .post-header-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .post-date {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 20px;
+            margin-top: 12px;
+        }
+
+        .post-caption {
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .post-tags {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .secret-label {
+            margin-left: 6px;
+            font-size: 11px;
+            color: var(--accent-secret);
+            border: 1px solid var(--accent-secret);
+            border-radius: 999px;
+            padding: 1px 5px;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="app">
+    <div class="app">
 
-  <!-- トップバー -->
-  <div class="topbar">
-    <div class="topbar-title">LAZY FRAME</div>
-    <button class="hamburger" id="menuToggle">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
+        <!-- ヘッダー -->
+        <div class="topbar">
+            <div class="topbar-title">
+                Lazygram
+                <span class="topbar-badge" id="adminBadge">管理者</span>
+            </div>
 
-  <!-- メニュー -->
-  <div class="menu-panel" id="menuPanel">
-    <div class="menu-item" id="menuAdminLogin">管理者ログイン</div>
-    <div class="menu-item admin-only" id="menuAdminLogout">ログアウト</div>
-  </div>
+            <button class="hamburger" id="menuToggle" aria-label="メニュー">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
 
-  <!-- プロフィール -->
-  <section class="profile">
-    <div class="avatar"></div>
-    <div class="profile-name">Lazy Panda</div>
-  </section>
+        <!-- ★ app の直下に置く -->
+        <div class="menu-panel" id="menuPanel">
+            <div class="menu-item" id="menuAdminLogin">
+                <span class="menu-item-main">管理者ログイン</span>
+                <span class="menu-item-label-sub">パスワード入力で秘密投稿も表示</span>
+            </div>
+            <div class="menu-item admin-only" id="menuAdminLogout">
+                <span class="menu-item-main">ログアウト</span>
+                <span class="menu-item-label-sub">管理者権限をオフにします</span>
+            </div>
+        </div>
 
-  <!-- 投稿 -->
-  <section class="posts" id="posts"></section>
+        <!-- プロフィール -->
+        <section class="profile">
+            <div class="avatar">
+                <img src="images/profile.jpg" alt="profile" />
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">@sisui_ks</div>
+                <div class="profile-sub">
+                    SKULLPANDA Lazy Panda の<br>
+                    ぬい撮りログ。
+                </div>
+            </div>
+        </section>
 
-</div>
+        <!-- 投稿一覧 -->
+        <section class="posts" id="posts"></section>
+    </div>
 
+    <script>
+        // 時間帯に応じて背景テーマを切り替え
+        (function setTimeTheme() {
+            const hour = new Date().getHours();
+            let theme = "day";
 
-<script>
+            if (hour >= 5 && hour < 10) {
+                theme = "morning";     
+            } else if (hour >= 10 && hour < 17) {
+                theme = "day";         
+            } else if (hour >= 17 && hour < 20) {
+                theme = "evening";     
+            } else {
+                theme = "night";       
+            }
 
-/* -------------------------------------
-   1. 時間帯テーマ切り替え
--------------------------------------- */
-(function setTimeTheme() {
-  const hour = new Date().getHours();
-  let theme = "day";
+            document.body.setAttribute("data-theme", theme);
+        })();
 
-  if (hour >= 5 && hour < 10) theme = "morning";
-  else if (hour >= 10 && hour < 17) theme = "day";
-  else if (hour >= 17 && hour < 20) theme = "evening";
-  else theme = "night";
+        // 管理者パスワード
+        const ADMIN_PASSWORD = "panda123";
+        let isAdmin = false;
+        const username = "@sisui_ks";
 
-  document.body.setAttribute("data-theme", theme);
-})();
+        // 投稿データ（あなたのダミー）
+        const ALL_POSTS = [
+            {
+                id: 1,
+                image: "images/post1.jpg",
+                date: "2025-11-01",
+                caption: "新しくお迎えしたレイジーパンダ。箱から出した瞬間から、もうやる気ゼロの顔してる。",
+                tags: "#lazy_panda #お迎え #skullpanda",
+                secret: false
+            },
+            {
+                id: 2,
+                image: "images/post2.jpg",
+                date: "2025-11-02",
+                caption: "日曜の午後、デスク横の特等席でごろごろ。作業してるのをただ見ている係。",
+                tags: "#デスク周り #ぬい撮り #lazy_panda",
+                secret: false
+            },
+            {
+                id: 3,
+                image: "images/post3.jpg",
+                date: "2025-11-03",
+                caption: "寝起きのパンダ。髪（？）がまとまらない朝。",
+                tags: "#lazy_panda #morning",
+                secret: false
+            },
+            {
+                id: 4,
+                image: "images/post4.jpg",
+                date: "2025-11-04",
+                caption: "これは内緒の1枚。実はこの場所には…秘密がある。",
+                tags: "#lazy_panda #secret",
+                secret: true
+            },
+            {
+                id: 5,
+                image: "images/post5.jpg",
+                date: "2025-11-05",
+                caption: "作業に付き合ってくれてありがとう。今日もがんばったね。",
+                tags: "#lazy_panda #work",
+                secret: false
+            }
+        ];
 
+        // 投稿を描画
+        function renderPosts() {
+            const postsContainer = document.getElementById("posts");
+            postsContainer.innerHTML = "";
 
-/* -------------------------------------
-   2. 投稿データ（仮）
--------------------------------------- */
-const posts = [
-  { image: "images/post1.jpg", text: "Lazy morning..." },
-  { image: "images/post2.jpg", text: "Chill time with Panda" },
-];
+            ALL_POSTS.forEach(post => {
+                if (post.secret && !isAdmin) return;
 
+                postsContainer.innerHTML += `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="avatar">
+                                <img src="images/profile.jpg" />
+                            </div>
+                            <div>
+                                <div class="post-header-name">${username}</div>
+                                <div class="post-date">${post.date}
+                                    ${post.secret ? `<span class="secret-label">SECRET</span>` : ""}
+                                </div>
+                            </div>
+                        </div>
 
-/* -------------------------------------
-   3. 投稿を画面に表示
--------------------------------------- */
-function renderPosts() {
-  const container = document.getElementById("posts");
-  container.innerHTML = "";
+                        <img src="${post.image}" class="post-image" />
 
-  posts.forEach(p => {
-    container.innerHTML += `
-      <div class="post-card">
-        <div class="post-text">${p.text}</div>
-        <img src="${p.image}" class="post-image" />
-      </div>
-    `;
-  });
-}
+                        <div class="post-caption">${post.caption}</div>
+                        <div class="post-tags">${post.tags}</div>
+                    </div>
+                `;
+            });
+        }
 
-renderPosts();
+        // メニュー、ログイン制御
+        function updateMenuForRole() {
+            const adminBadge = document.getElementById("adminBadge");
+            const adminOnlyItems = document.querySelectorAll(".admin-only");
+            const loginItem = document.getElementById("menuAdminLogin");
 
+            if (isAdmin) {
+                adminBadge.style.display = "inline-block";
+                adminOnlyItems.forEach(el => el.style.display = "block");
+                loginItem.style.display = "none";
+            } else {
+                adminBadge.style.display = "none";
+                adminOnlyItems.forEach(el => el.style.display = "none");
+                loginItem.style.display = "block";
+            }
+        }
 
-/* -------------------------------------
-   4. ハンバーガーメニュー制御
--------------------------------------- */
-const menuToggle = document.getElementById("menuToggle");
-const menuPanel = document.getElementById("menuPanel");
+        function setupMenu() {
+            const menuToggle = document.getElementById("menuToggle");
+            const menuPanel = document.getElementById("menuPanel");
+            const menuAdminLogin = document.getElementById("menuAdminLogin");
+            const menuAdminLogout = document.getElementById("menuAdminLogout");
 
-menuToggle.addEventListener("click", () => {
-  menuPanel.classList.toggle("open");
-});
+            menuToggle.addEventListener("click", () => {
+                menuPanel.classList.toggle("open");
+            });
 
-document.addEventListener("click", (e) => {
-  if (!menuPanel.contains(e.target) && !menuToggle.contains(e.target)) {
-    menuPanel.classList.remove("open");
-  }
-});
+            document.addEventListener("click", (e) => {
+                if (!menuPanel.contains(e.target) && !menuToggle.contains(e.target)) {
+                    menuPanel.classList.remove("open");
+                }
+            });
 
+            menuAdminLogin.addEventListener("click", () => {
+                const input = prompt("管理者パスワードを入力してください");
+                if (!input) return;
+                if (input === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    sessionStorage.setItem("lazy_panda_is_admin", "1");
+                    alert("管理者モードになりました。秘密投稿が表示されます。");
+                    updateMenuForRole();
+                    menuPanel.classList.remove("open");
+                    renderPosts();
+                } else {
+                    alert("パスワードが違います。");
+                }
+            });
 
-</script>
+            menuAdminLogout.addEventListener("click", () => {
+                isAdmin = false;
+                sessionStorage.removeItem("lazy_panda_is_admin");
+                alert("管理者モードを終了しました。秘密投稿は非表示になります。");
+                updateMenuForRole();
+                menuPanel.classList.remove("open");
+                renderPosts();
+            });
+        }
+
+        function initRoleFromSession() {
+            if (sessionStorage.getItem("lazy_panda_is_admin") === "1") {
+                isAdmin = true;
+            } else {
+                isAdmin = false;
+            }
+        }
+
+        // 初期化
+        initRoleFromSession();
+        renderPosts();
+        setupMenu();
+        updateMenuForRole();
+    </script>
 
 </body>
 </html>
